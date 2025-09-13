@@ -48,7 +48,7 @@ class PingTool {
 
 int main(int argc, char* argv[]) {
     try {
-        cxxopts::Options options("prettyping", "A prettier ping tool \n\nUsage:\n ping <domain or ip>");
+        cxxopts::Options options("prettyping", "A prettier ping tool");
         options.add_options()
             ("a, address", "Domain to ping", cxxopts::value<std::string>())
             ("i, ip", "IP address to ping", cxxopts::value<std::string>())
@@ -56,7 +56,7 @@ int main(int argc, char* argv[]) {
             ("v, version", "Print version information")
             ("h, help", "Print usage");
 
-        options.parse_positional({"address"});
+        options.parse_positional({"ip", "address"});
         options.allow_unrecognised_options();
 
         // Return an object that contains proxy objects for the arguments
@@ -75,11 +75,10 @@ int main(int argc, char* argv[]) {
             return 0;
         }
 
-        if (result.count("filename") == 0 && result.count("hash") == 0) {
+        if (result.count("address") == 0 && result.count("ip") == 0) {
             std::cerr << color.red << "Error: " << color.reset << "Missing required arguments. \n\n" << options.help() << std::endl;
             return 1;
         }
-
     } catch (const cxxopts::exceptions::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
         return 1;        
