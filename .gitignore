@@ -41,3 +41,6 @@
 *.dwo
 
 build/
+
+# learning sockets lol
+socket/
