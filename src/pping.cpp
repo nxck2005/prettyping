@@ -1,5 +1,13 @@
 #include "../lib/cxxopts.hpp"
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <array>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netinet/ip_icmp.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+
 
 // For color
 #ifdef _WIN32
@@ -79,6 +87,8 @@ int main(int argc, char* argv[]) {
             std::cerr << color.red << "Error: " << color.reset << "Missing required arguments. \n\n" << options.help() << std::endl;
             return 1;
         }
+        int sock = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
+
     } catch (const cxxopts::exceptions::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
         return 1;        
