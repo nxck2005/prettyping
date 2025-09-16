@@ -7,6 +7,7 @@
 #include <netinet/ip_icmp.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <netdb.h>
 
 
 // For color
@@ -20,6 +21,18 @@
 #define IS_TTY isatty
 #define FILENO fileno
 #endif
+
+// CONSTANTS
+// copied from the original ping source code at http://www.ping127001.com/pingpage/ping.text
+#define MAXWAIT 10 // max time to wait for response in sec
+#define MAXPACKET 4096 // max packet size
+#define VERBOSE 1 // verbose flag
+#define QUIET 2 // quiet flag
+#define FLOOD 4 // floodping flag (should i have this???)
+#ifndef MAXHOSTNAMELEN
+#define MAXHOSTNAMELEN 64
+#endif
+
 
 // To manage terminal colors
 // slapped in from my itfl project
@@ -87,8 +100,33 @@ int main(int argc, char* argv[]) {
             std::cerr << color.red << "Error: " << color.reset << "Missing required arguments. \n\n" << options.help() << std::endl;
             return 1;
         }
-        int sock = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
 
+
+        // create socket for icmp protocol
+        int sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
+
+        if (sockfd == -1) {
+            std::cerr << color.red << "Error: " << color.reset << "socket returned a negative file descriptor (are you elevated?)" << std::endl;
+            return 1;
+        }
+
+        u_char packet[MAXPACKET];
+        sockaddr_in from; // here, basically
+        sockaddr_in to;
+        int datalen;
+        std::string hostname;
+        std::string hnamebuf[MAXHOSTNAMELEN];
+        int npackets;
+        int preload = 0;
+        int ntransmitted = 0;
+        int ident;
+
+        int nrecieved = 0;
+        int timing = 0;
+        int tmin = INT32_MAX;
+        int tmax = 0;
+        int tsum = 0;
+        
     } catch (const cxxopts::exceptions::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
         return 1;        
